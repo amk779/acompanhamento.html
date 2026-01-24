@@ -3,35 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGP - Gestão de Plantões</title>
+    <title>Controle de Plantões - Horto Bela Vista</title>
     <style>
         :root {
-            --primary: #2c3e50;    /* Azul Corporativo */
-            --accent: #3498db;     /* Azul Destaque */
-            --bg: #ecf0f1;         /* Fundo */
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f6;
             --white: #ffffff;
-            --green: #27ae60;      /* Meu Pagamento */
-            --red: #c0392b;        /* Pagamento Dono */
-            --border: #bdc3c7;
+            --green: #27ae60;
+            --red: #c0392b;
+            --border: #dcdde1;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         
-        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--primary); padding-bottom: 50px; }
+        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--primary); padding-bottom: 40px; }
 
-        /* --- Header --- */
-        header { background: var(--primary); color: white; padding: 20px 15px; text-align: center; }
-        h1 { margin: 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
-        .subtitle { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; font-weight: 300; }
+        /* --- Créditos --- */
+        .dev-credit { 
+            background: #fff; 
+            font-size: 0.7rem; 
+            text-align: center; 
+            padding: 5px; 
+            color: #95a5a6; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            border-bottom: 1px solid #eee;
+        }
 
-        /* --- Aviso --- */
-        .notice { background: #fff3cd; color: #856404; padding: 10px; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #ffeeba; }
+        header { background: var(--primary); color: white; padding: 25px 15px; text-align: center; }
+        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 0.5px; }
+        .subtitle { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; }
 
-        /* --- Dashboard (Placar) --- */
+        .notice { background: #fff8e1; color: #7f8c8d; padding: 12px; font-size: 0.75rem; text-align: center; border-bottom: 1px solid #ffe082; line-height: 1.4; }
+
+        /* --- Dashboard --- */
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             max-width: 600px;
             margin: 20px auto;
             padding: 0 15px;
@@ -41,38 +51,27 @@
             background: var(--white);
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             border-top: 4px solid #ccc;
-            text-align: center;
         }
-
-        .card.worker { border-color: var(--green); }
-        .card.owner { border-color: var(--red); }
-
-        .card h3 { margin: 0 0 10px; font-size: 0.75rem; text-transform: uppercase; color: #7f8c8d; }
+        .card.worker { border-top-color: var(--green); }
+        .card.owner { border-top-color: var(--red); }
+        .card h3 { margin: 0 0 10px; font-size: 0.7rem; text-transform: uppercase; color: #7f8c8d; }
         
-        .stats-row { display: flex; justify-content: space-between; align-items: flex-end; }
-        .stat-group { display: flex; flex-direction: column; }
+        .stats-row { display: flex; justify-content: space-between; align-items: baseline; }
         .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
-        .stat-lbl { font-size: 0.65rem; color: #95a5a6; text-transform: uppercase; }
+        .stat-lbl { font-size: 0.6rem; color: #95a5a6; }
 
-        /* --- Calendário (Grid Robusto) --- */
-        .calendar-container {
-            max-width: 600px;
-            margin: 0 auto 30px;
-            padding: 0 15px;
-        }
-
+        /* --- Calendário --- */
+        .calendar-container { max-width: 600px; margin: 0 auto; padding: 0 15px; }
         .cal-nav {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--white); padding: 15px;
             border-radius: 8px 8px 0 0; border: 1px solid var(--border); border-bottom: none;
         }
-        .btn-nav { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; cursor: pointer; color: var(--primary); font-size: 1.2rem; }
-        
-        .month-info { text-align: center; }
-        .month-title { font-weight: bold; font-size: 1.1rem; }
-        .pay-info { font-size: 0.75rem; color: #7f8c8d; margin-top: 3px; }
+        .btn-nav { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; cursor: pointer; }
+        .month-title { font-weight: bold; font-size: 1rem; }
+        .pay-info { font-size: 0.7rem; color: #95a5a6; }
 
         .calendar-grid {
             display: grid;
@@ -80,346 +79,196 @@
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 0 0 8px 8px;
-            overflow: hidden; /* Garante bordas arredondadas */
         }
 
-        /* Cabeçalho dias da semana */
-        .weekday {
-            background: #f8f9fa;
-            color: #7f8c8d;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
+        .weekday { background: #f8f9fa; font-size: 0.65rem; font-weight: bold; text-align: center; padding: 10px 0; border-bottom: 1px solid #eee; color: #95a5a6; }
 
-        /* Células dos dias */
-        .day {
-            aspect-ratio: 1;
-            border-right: 1px solid #f0f0f0;
-            border-bottom: 1px solid #f0f0f0;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.1s;
-        }
+        .day { aspect-ratio: 1; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; position: relative; cursor: pointer; }
+        .day:nth-child(7n) { border-right: none; }
+        .day-num { position: absolute; top: 4px; left: 6px; font-size: 0.85rem; }
         
-        .day:nth-child(7n) { border-right: none; } /* Remove borda direita da última coluna */
-        .day:active { background-color: #eef2f5; }
-
-        .day-num { position: absolute; top: 5px; left: 8px; font-size: 0.9rem; font-weight: 500; }
-        
-        /* Badges de Status */
         .badge {
             position: absolute; bottom: 4px; left: 2px; right: 2px;
-            font-size: 0.6rem; text-align: center; padding: 2px;
-            border-radius: 3px; font-weight: bold;
+            font-size: 0.55rem; text-align: center; padding: 2px;
+            border-radius: 2px; font-weight: bold;
         }
-        .badge.mine { background: rgba(39, 174, 96, 0.15); color: var(--green); }
-        .badge.theirs { background: rgba(192, 57, 43, 0.15); color: var(--red); }
+        .badge.mine { background: #e9f7ef; color: var(--green); }
+        .badge.theirs { background: #fdedec; color: var(--red); }
 
         /* --- Modal --- */
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000;
+            background: rgba(44, 62, 80, 0.8); z-index: 1000;
             display: none; justify-content: center; align-items: center;
         }
         .overlay.active { display: flex; }
-
-        .modal { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal h2 { margin: 0 0 15px; font-size: 1.1rem; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        
-        label { display: block; margin: 15px 0 5px; font-size: 0.85rem; font-weight: bold; color: #7f8c8d; }
-        input[type="date"] { width: 100%; padding: 10px; font-size: 1rem; border: 1px solid var(--border); border-radius: 4px; }
-        
-        .modal-rule { background: #f8f9fa; padding: 10px; border-radius: 4px; font-size: 0.75rem; color: #555; margin: 15px 0; line-height: 1.4; }
-        
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .modal { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 340px; }
+        .modal h2 { margin: 0 0 15px; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        label { display: block; margin: 10px 0 5px; font-size: 0.8rem; font-weight: bold; }
+        input[type="date"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; }
+        .actions { display: flex; gap: 8px; margin-top: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         .btn-save { background: var(--primary); color: white; }
-        .btn-del { background: white; color: var(--red); border: 1px solid #eee; }
-        .btn-close { background: #95a5a6; color: white; }
-
-        .btn-reset { display: block; margin: 20px auto; background: none; border: none; color: #7f8c8d; text-decoration: underline; font-size: 0.85rem; cursor: pointer; }
-
+        .btn-del { background: #f8f9fa; color: var(--red); }
+        .btn-close { background: #eee; color: #666; }
+        .btn-reset { display: block; margin: 20px auto; background: none; border: none; color: #95a5a6; text-decoration: underline; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
+<div class="dev-credit">Desenvolvido por SD Mikael</div>
+
 <header>
-    <h1>Controle VD &bull; SGP</h1>
-    <div class="subtitle">Horto Bela Vista</div>
+    <h1>Controle VD</h1>
+    <div class="subtitle">Horto Bela Vista (15h às 23h)</div>
 </header>
 
 <div class="notice">
-    <strong>Regra:</strong> Formalizou até dia 20 → Seu Pagamento. Após dia 20 → Dono da Escala.
+    <strong>Aviso:</strong> O serviço prestado neste mês cairá no contracheque do mês seguinte. A data de formalização define quem recebe.
 </div>
 
 <div class="dashboard">
     <div class="card worker">
-        <h3>Meu Contracheque</h3>
+        <h3>Meu Recebimento</h3>
         <div class="stats-row">
-            <div class="stat-group">
-                <span class="stat-val" id="wDay">0</span>
-                <span class="stat-lbl">h Diurna</span>
-            </div>
-            <div class="stat-group" style="text-align: right;">
-                <span class="stat-val" id="wNight">0</span>
-                <span class="stat-lbl">h Noturna</span>
-            </div>
+            <div><span class="stat-val" id="wDay">0</span><br><span class="stat-lbl">h Diurna</span></div>
+            <div style="text-align: right;"><span class="stat-val" id="wNight">0</span><br><span class="stat-lbl">h Noturna</span></div>
         </div>
     </div>
-
     <div class="card owner">
         <h3>Dono da Escala</h3>
         <div class="stats-row">
-            <div class="stat-group">
-                <span class="stat-val" id="oDay">0</span>
-                <span class="stat-lbl">h Diurna</span>
-            </div>
-            <div class="stat-group" style="text-align: right;">
-                <span class="stat-val" id="oNight">0</span>
-                <span class="stat-lbl">h Noturna</span>
-            </div>
+            <div><span class="stat-val" id="oDay">0</span><br><span class="stat-lbl">h Diurna</span></div>
+            <div style="text-align: right;"><span class="stat-val" id="oNight">0</span><br><span class="stat-lbl">h Noturna</span></div>
         </div>
     </div>
 </div>
 
 <div class="calendar-container">
     <div class="cal-nav">
-        <button class="btn-nav" onclick="changeMonth(-1)">&#8249;</button>
-        <div class="month-info">
-            <div class="month-title" id="monthTitle">Carregando...</div>
-            <div class="pay-info" id="payInfo">...</div>
+        <button class="btn-nav" onclick="changeMonth(-1)">&#10094;</button>
+        <div style="text-align: center;">
+            <div class="month-title" id="monthTitle">Mês</div>
+            <div class="pay-info" id="payInfo">Pagamento em: ...</div>
         </div>
-        <button class="btn-nav" onclick="changeMonth(1)">&#8250;</button>
+        <button class="btn-nav" onclick="changeMonth(1)">&#10095;</button>
     </div>
-
-    <div class="calendar-grid" id="grid">
-        </div>
+    <div class="calendar-grid" id="grid"></div>
 </div>
 
-<button class="btn-reset" onclick="resetMonth()">Limpar dados deste mês</button>
+<button class="btn-reset" onclick="resetMonth()">Limpar dados do mês</button>
 
 <div class="overlay" id="modal">
     <div class="modal">
         <h2 id="modalDateDisplay">Data</h2>
-        
-        <label>Data da Formalização (Obrigatório)</label>
+        <label>Data de Formalização:</label>
         <input type="date" id="inputFormaliza">
-        
-        <div class="modal-rule">
-            <strong>Referência de Pagamento:</strong><br>
-            A data inserida acima define quem recebe.<br>
-            • Até dia 20: <strong>Você</strong><br>
-            • Dia 21 em diante: <strong>Dono da Escala</strong>
-        </div>
-
+        <p style="font-size: 0.7rem; color: #7f8c8d; margin-top: 15px;">
+            * Até o dia 20: Pagamento vai p/ você.<br>
+            * Após dia 20: Pagamento vai p/ o dono.
+        </p>
         <div class="actions">
             <button class="btn btn-del" onclick="deleteService()">Apagar</button>
-            <button class="btn btn-close" onclick="closeModal()">Cancelar</button>
+            <button class="btn btn-close" onclick="closeModal()">Sair</button>
             <button class="btn btn-save" onclick="saveService()">Salvar</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- Config ---
     const CONFIG = { day: 7, night: 1, cutoff: 20 };
     const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
     const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-    // --- State ---
-    let nav = 0; // deslocamento de mês
-    let selectedDateKey = null; // YYYY-MM-DD
-    let services = JSON.parse(localStorage.getItem('sgp_vd_data')) || {};
-
-    // --- DOM Elements ---
-    const grid = document.getElementById('grid');
-    const monthTitle = document.getElementById('monthTitle');
-    const payInfo = document.getElementById('payInfo');
-    const modal = document.getElementById('modal');
-    const inputFormaliza = document.getElementById('inputFormaliza');
-    const modalDateDisplay = document.getElementById('modalDateDisplay');
-
-    // --- Core Functions ---
-    
-    function init() {
-        render();
-    }
+    let nav = 0;
+    let selectedDateKey = null;
+    let services = JSON.parse(localStorage.getItem('mikael_vd_data')) || {};
 
     function render() {
         const dt = new Date();
-        // CORREÇÃO CRÍTICA: Setar dia 1 para evitar bug de pular mês (ex: 31 Jan -> SetMonth(fev))
-        dt.setDate(1); 
+        dt.setDate(1);
         dt.setMonth(new Date().getMonth() + nav);
+        const year = dt.getFullYear(), month = dt.getMonth();
 
-        const year = dt.getFullYear();
-        const month = dt.getMonth(); // 0-11
+        document.getElementById('monthTitle').innerText = `${MONTHS[month]} ${year}`;
+        const nextM = (month + 1) % 12;
+        document.getElementById('payInfo').innerText = `Pagamento Previsto: ${MONTHS[nextM]}`;
 
-        // 1. Atualiza Textos
-        monthTitle.innerText = `${MONTHS[month]} ${year}`;
-        
-        // Lógica: Recebimento mês seguinte
-        const nextMonthIndex = (month + 1) % 12;
-        const nextYear = nextMonthIndex === 0 ? year + 1 : year;
-        payInfo.innerText = `Pagamento Previsto: ${MONTHS[nextMonthIndex]} ${nextYear}`;
-
-        // 2. Limpa e Prepara Grid
+        const grid = document.getElementById('grid');
         grid.innerHTML = '';
+        WEEKDAYS.forEach(wd => grid.innerHTML += `<div class="weekday">${wd}</div>`);
 
-        // 2.1 Renderiza Cabeçalhos (Dias da Semana)
-        WEEKDAYS.forEach(wd => {
-            const div = document.createElement('div');
-            div.className = 'weekday';
-            div.innerText = wd;
-            grid.appendChild(div);
-        });
-
-        // 2.2 Calcula Dias
+        const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const firstDayIndex = new Date(year, month, 1).getDay();
 
-        // Dias vazios antes do dia 1
-        for(let i=0; i<firstDayIndex; i++) {
-            const padding = document.createElement('div');
-            padding.className = 'day';
-            padding.style.background = '#fcfcfc';
-            padding.style.cursor = 'default';
-            grid.appendChild(padding);
-        }
+        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="day" style="background:#fafafa"></div>`;
 
-        // Dias do mês
         for(let i=1; i<=daysInMonth; i++) {
+            const key = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
             const dayDiv = document.createElement('div');
             dayDiv.className = 'day';
-            
-            // Chave única YYYY-MM-DD
-            const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            
             dayDiv.innerHTML = `<span class="day-num">${i}</span>`;
-
-            // Verifica se tem serviço salvo
-            if(services[dateKey]) {
-                const formalizacao = services[dateKey].formalizacao;
-                const [fY, fM, fD] = formalizacao.split('-').map(Number);
-                
-                // Lógica Visual
-                if(fD <= CONFIG.cutoff) {
-                    dayDiv.innerHTML += `<div class="badge mine">MEU</div>`;
-                } else {
-                    dayDiv.innerHTML += `<div class="badge theirs">DONO</div>`;
-                }
+            if(services[key]) {
+                const isMine = parseInt(services[key].formalizacao.split('-')[2]) <= CONFIG.cutoff;
+                dayDiv.innerHTML += `<div class="badge ${isMine?'mine':'theirs'}">${isMine?'MEU':'DONO'}</div>`;
             }
-
-            dayDiv.onclick = () => openModal(dateKey, i, month, year);
+            dayDiv.onclick = () => openModal(key, i, month);
             grid.appendChild(dayDiv);
         }
-
-        calculateTotals(year, month);
+        calc(year, month);
     }
 
-    function calculateTotals(year, month) {
-        let totals = { wDay: 0, wNight: 0, oDay: 0, oNight: 0 };
-
-        // Itera sobre todos os dados salvos
-        for (const [key, data] of Object.entries(services)) {
-            // Verifica se o serviço pertence ao mês atual do calendário
-            const [sYear, sMonth, sDay] = key.split('-').map(Number);
-            
-            if (sYear === year && (sMonth - 1) === month) {
-                if(!data.formalizacao) continue;
-
-                const dayOfFormalization = parseInt(data.formalizacao.split('-')[2]);
-
-                if (dayOfFormalization <= CONFIG.cutoff) {
-                    totals.wDay += CONFIG.day;
-                    totals.wNight += CONFIG.night;
-                } else {
-                    totals.oDay += CONFIG.day;
-                    totals.oNight += CONFIG.night;
-                }
+    function calc(y, m) {
+        let wD=0, wN=0, oD=0, oN=0;
+        for(const k in services) {
+            const [sy, sm, sd] = k.split('-').map(Number);
+            if(sy===y && sm===(m+1)) {
+                if(parseInt(services[k].formalizacao.split('-')[2]) <= CONFIG.cutoff) { wD+=CONFIG.day; wN+=CONFIG.night; }
+                else { oD+=CONFIG.day; oN+=CONFIG.night; }
             }
         }
-
-        // Atualiza HTML
-        document.getElementById('wDay').innerText = totals.wDay;
-        document.getElementById('wNight').innerText = totals.wNight;
-        document.getElementById('oDay').innerText = totals.oDay;
-        document.getElementById('oNight').innerText = totals.oNight;
+        document.getElementById('wDay').innerText = wD; document.getElementById('wNight').innerText = wN;
+        document.getElementById('oDay').innerText = oD; document.getElementById('oNight').innerText = oN;
     }
 
-    // --- Modal Logic ---
-
-    function openModal(dateKey, day, month, year) {
-        selectedDateKey = dateKey;
-        modalDateDisplay.innerText = `${day} de ${MONTHS[month]}`;
-        
-        if (services[dateKey]) {
-            inputFormaliza.value = services[dateKey].formalizacao;
-        } else {
-            inputFormaliza.value = '';
-        }
-        
-        modal.classList.add('active');
+    function openModal(key, d, m) {
+        selectedDateKey = key;
+        document.getElementById('modalDateDisplay').innerText = `${d} de ${MONTHS[m]}`;
+        document.getElementById('inputFormaliza').value = services[key] ? services[key].formalizacao : '';
+        document.getElementById('modal').classList.add('active');
     }
 
-    function closeModal() {
-        modal.classList.remove('active');
-        selectedDateKey = null;
-    }
+    function closeModal() { document.getElementById('modal').classList.remove('active'); }
 
     function saveService() {
-        const val = inputFormaliza.value;
-        if(!val) {
-            alert("Informe a data de formalização.");
-            return;
-        }
-
+        const val = document.getElementById('inputFormaliza').value;
+        if(!val) return alert("Selecione a data de formalização.");
         services[selectedDateKey] = { formalizacao: val };
-        localStorage.setItem('sgp_vd_data', JSON.stringify(services));
-        closeModal();
-        render();
+        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
+        closeModal(); render();
     }
 
     function deleteService() {
-        if(services[selectedDateKey]) {
-            delete services[selectedDateKey];
-            localStorage.setItem('sgp_vd_data', JSON.stringify(services));
-        }
-        closeModal();
-        render();
+        delete services[selectedDateKey];
+        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
+        closeModal(); render();
     }
 
-    function changeMonth(dir) {
-        nav += dir;
-        render();
-    }
+    function changeMonth(dir) { nav += dir; render(); }
 
     function resetMonth() {
-        if(!confirm("Apagar todos os serviços deste mês?")) return;
-        
-        // Pega mês atual da tela
-        const dt = new Date();
-        dt.setDate(1);
-        dt.setMonth(new Date().getMonth() + nav);
-        const y = dt.getFullYear();
-        const m = dt.getMonth() + 1; // 1-12
-
-        for(const key in services) {
-            const [sy, sm, sd] = key.split('-').map(Number);
-            if(sy === y && sm === m) {
-                delete services[key];
-            }
+        if(!confirm("Limpar dados deste mês?")) return;
+        const dt = new Date(); dt.setDate(1); dt.setMonth(new Date().getMonth() + nav);
+        const y = dt.getFullYear(), m = dt.getMonth() + 1;
+        for(const k in services) {
+            const [sy, sm] = k.split('-').map(Number);
+            if(sy===y && sm===m) delete services[k];
         }
-        localStorage.setItem('sgp_vd_data', JSON.stringify(services));
+        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
         render();
     }
 
-    // Inicia ao carregar
-    window.addEventListener('DOMContentLoaded', init);
-
+    window.onload = render;
 </script>
-
 </body>
 </html>
