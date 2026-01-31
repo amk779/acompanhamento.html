@@ -3,272 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Plantões - Horto Bela Vista</title>
+    <title>Controle de Escala 2026</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --bg: #f4f7f6;
-            --white: #ffffff;
-            --green: #27ae60;
-            --red: #c0392b;
-            --border: #dcdde1;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            /* Cores dos Serviços */
+            --tag-cts: #dbeafe; /* Azul claro */
+            --tag-cts-text: #1e40af;
+            --tag-bela: #fce7f3; /* Rosa claro */
+            --tag-bela-text: #9d174d;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        
-        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--primary); padding-bottom: 40px; }
+        * { box-sizing: border-box; }
 
-        /* --- Créditos --- */
-        .dev-credit { 
-            background: #fff; 
-            font-size: 0.7rem; 
-            text-align: center; 
-            padding: 5px; 
-            color: #95a5a6; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            border-bottom: 1px solid #eee;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
         }
 
-        header { background: var(--primary); color: white; padding: 25px 15px; text-align: center; }
-        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 0.5px; }
-        .subtitle { font-size: 0.8rem; opacity: 0.7; margin-top: 5px; }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
 
-        .notice { background: #fff8e1; color: #7f8c8d; padding: 12px; font-size: 0.75rem; text-align: center; border-bottom: 1px solid #ffe082; line-height: 1.4; }
+        /* Header e Navegação */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
 
-        /* --- Dashboard --- */
-        .dashboard {
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 16px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-body);
+            color: var(--primary);
+        }
+
+        #monthTitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 160px;
+            text-align: center;
+            margin: 0;
+        }
+
+        /* Layout Grid Principal */
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 0 15px;
+            grid-template-columns: 3fr 1fr;
+            gap: 24px;
         }
 
-        .card {
-            background: var(--white);
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-top: 4px solid #ccc;
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
         }
-        .card.worker { border-top-color: var(--green); }
-        .card.owner { border-top-color: var(--red); }
-        .card h3 { margin: 0 0 10px; font-size: 0.7rem; text-transform: uppercase; color: #7f8c8d; }
-        
-        .stats-row { display: flex; justify-content: space-between; align-items: baseline; }
-        .stat-val { font-size: 1.4rem; font-weight: bold; color: var(--primary); }
-        .stat-lbl { font-size: 0.6rem; color: #95a5a6; }
 
-        /* --- Calendário --- */
-        .calendar-container { max-width: 600px; margin: 0 auto; padding: 0 15px; }
-        .cal-nav {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 15px;
-            border-radius: 8px 8px 0 0; border: 1px solid var(--border); border-bottom: none;
+        /* Calendário */
+        .calendar-wrapper {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
-        .btn-nav { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; cursor: pointer; }
-        .month-title { font-weight: bold; font-size: 1rem; }
-        .pay-info { font-size: 0.7rem; color: #95a5a6; }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 10px;
+        }
+
+        .day-name {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding-bottom: 8px;
+        }
 
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            background: var(--white);
+            gap: 8px;
+        }
+
+        .day-card {
+            background: #fff;
             border: 1px solid var(--border);
-            border-radius: 0 0 8px 8px;
+            border-radius: 12px;
+            min-height: 110px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .weekday { background: #f8f9fa; font-size: 0.65rem; font-weight: bold; text-align: center; padding: 10px 0; border-bottom: 1px solid #eee; color: #95a5a6; }
+        .day-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+            z-index: 2;
+        }
 
-        .day { aspect-ratio: 1; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; position: relative; cursor: pointer; }
-        .day:nth-child(7n) { border-right: none; }
-        .day-num { position: absolute; top: 4px; left: 6px; font-size: 0.85rem; }
+        .day-number {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        /* Select Customizado */
+        select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #f9fafb;
+            font-size: 0.75rem;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+        }
         
-        .badge {
-            position: absolute; bottom: 4px; left: 2px; right: 2px;
-            font-size: 0.55rem; text-align: center; padding: 2px;
-            border-radius: 2px; font-weight: bold;
+        select:focus {
+            border-color: var(--primary);
         }
-        .badge.mine { background: #e9f7ef; color: var(--green); }
-        .badge.theirs { background: #fdedec; color: var(--red); }
 
-        /* --- Modal --- */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(44, 62, 80, 0.8); z-index: 1000;
-            display: none; justify-content: center; align-items: center;
+        /* Indicadores Visuais (Badges) */
+        .service-badge {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: center;
+            display: none; /* Escondido se for NONE */
         }
-        .overlay.active { display: flex; }
-        .modal { background: white; padding: 20px; border-radius: 8px; width: 85%; max-width: 340px; }
-        .modal h2 { margin: 0 0 15px; font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        label { display: block; margin: 10px 0 5px; font-size: 0.8rem; font-weight: bold; }
-        input[type="date"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem; }
-        .actions { display: flex; gap: 8px; margin-top: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-        .btn-save { background: var(--primary); color: white; }
-        .btn-del { background: #f8f9fa; color: var(--red); }
-        .btn-close { background: #eee; color: #666; }
-        .btn-reset { display: block; margin: 20px auto; background: none; border: none; color: #95a5a6; text-decoration: underline; font-size: 0.8rem; cursor: pointer; }
+
+        .service-badge.visible { display: block; }
+        
+        /* Cores dos Badges */
+        .badge-CTS { background-color: var(--tag-cts); color: var(--tag-cts-text); }
+        .badge-BELA { background-color: var(--tag-bela); color: var(--tag-bela-text); }
+
+        /* Painel de Totais */
+        .stats-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--bg-body);
+            padding-bottom: 10px;
+        }
+
+        .metric-group {
+            margin-bottom: 20px;
+        }
+
+        .metric-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .progress-bg {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.5s ease, background-color 0.3s;
+        }
+
+        .progress-fill.warning { background: var(--danger); }
+
+        .sub-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mini-stat {
+            background: var(--bg-body);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .mini-stat span { display: block; }
+        .mini-stat .val { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+        .mini-stat .lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
     </style>
 </head>
 <body>
 
-<div class="dev-credit">Desenvolvido por SD Mikael</div>
-
-<header>
-    <h1>Controle VD</h1>
-    <div class="subtitle">Horto Bela Vista (15h às 23h)</div>
-</header>
-
-<div class="notice">
-    <strong>Aviso:</strong> O serviço prestado neste mês cairá no contracheque do mês seguinte. A data de formalização define quem recebe.
-</div>
-
-<div class="dashboard">
-    <div class="card worker">
-        <h3>Meu Recebimento</h3>
-        <div class="stats-row">
-            <div><span class="stat-val" id="wDay">0</span><br><span class="stat-lbl">h Diurna</span></div>
-            <div style="text-align: right;"><span class="stat-val" id="wNight">0</span><br><span class="stat-lbl">h Noturna</span></div>
+<div class="container">
+    <header>
+        <h1>Controle HE / VD - 2026</h1>
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="prevMonth()" title="Mês Anterior">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <h2 id="monthTitle"></h2>
+            <button class="nav-btn" onclick="nextMonth()" title="Próximo Mês">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
         </div>
-    </div>
-    <div class="card owner">
-        <h3>Dono da Escala</h3>
-        <div class="stats-row">
-            <div><span class="stat-val" id="oDay">0</span><br><span class="stat-lbl">h Diurna</span></div>
-            <div style="text-align: right;"><span class="stat-val" id="oNight">0</span><br><span class="stat-lbl">h Noturna</span></div>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="calendar-wrapper">
+            <div class="calendar-header" id="dayHeaders"></div>
+            <div class="calendar-grid" id="calendar"></div>
         </div>
-    </div>
-</div>
 
-<div class="calendar-container">
-    <div class="cal-nav">
-        <button class="btn-nav" onclick="changeMonth(-1)">&#10094;</button>
-        <div style="text-align: center;">
-            <div class="month-title" id="monthTitle">Mês</div>
-            <div class="pay-info" id="payInfo">Pagamento em: ...</div>
-        </div>
-        <button class="btn-nav" onclick="changeMonth(1)">&#10095;</button>
-    </div>
-    <div class="calendar-grid" id="grid"></div>
-</div>
+        <div class="stats-panel">
+            <div class="stat-card">
+                <h3>Resumo do Mês</h3>
+                
+                <div class="metric-group">
+                    <div class="metric-label">
+                        <span>Horas Extras (HE)</span>
+                        <span><strong id="heTotal">0</strong> / 60</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div id="heBar" class="progress-fill"></div>
+                    </div>
+                </div>
 
-<button class="btn-reset" onclick="resetMonth()">Limpar dados do mês</button>
+                <div class="metric-group">
+                    <div class="metric-label">
+                        <span>Valor Diário (VD)</span>
+                        <span><strong id="vdTotal">0</strong> / 60</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div id="vdBar" class="progress-fill"></div>
+                    </div>
+                </div>
 
-<div class="overlay" id="modal">
-    <div class="modal">
-        <h2 id="modalDateDisplay">Data</h2>
-        <label>Data de Formalização:</label>
-        <input type="date" id="inputFormaliza">
-        <p style="font-size: 0.7rem; color: #7f8c8d; margin-top: 15px;">
-            * Até o dia 20: Pagamento vai p/ você.<br>
-            * Após dia 20: Pagamento vai p/ o dono.
-        </p>
-        <div class="actions">
-            <button class="btn btn-del" onclick="deleteService()">Apagar</button>
-            <button class="btn btn-close" onclick="closeModal()">Sair</button>
-            <button class="btn btn-save" onclick="saveService()">Salvar</button>
+                <div class="sub-metrics">
+                    <div class="mini-stat">
+                        <span class="val" id="vdDay">0</span>
+                        <span class="lbl">VD Diurno</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="val" id="vdNight">0</span>
+                        <span class="lbl">VD Noturno</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const CONFIG = { day: 7, night: 1, cutoff: 20 };
-    const WEEKDAYS = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-    const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+const year = 2026;
+let currentMonth = 0; // Janeiro = 0
 
-    let nav = 0;
-    let selectedDateKey = null;
-    let services = JSON.parse(localStorage.getItem('mikael_vd_data')) || {};
+const services = {
+    NONE: { name: "Folga / Nenhum", code: "NONE", he: 0, vd: 0, vdDay: 0, vdNight: 0 },
+    CTS: { name: "CTS", code: "CTS", he: 7, vd: 0, vdDay: 0, vdNight: 0 },
+    BELA: { name: "Bela Vista", code: "BELA", he: 0, vd: 8, vdDay: 7, vdNight: 1 }
+};
 
-    function render() {
-        const dt = new Date();
-        dt.setDate(1);
-        dt.setMonth(new Date().getMonth() + nav);
-        const year = dt.getFullYear(), month = dt.getMonth();
+const monthNames = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+];
 
-        document.getElementById('monthTitle').innerText = `${MONTHS[month]} ${year}`;
-        const nextM = (month + 1) % 12;
-        document.getElementById('payInfo').innerText = `Pagamento Previsto: ${MONTHS[nextM]}`;
+function getStorageKey(month) {
+    return `hevd_${year}_${month}`;
+}
 
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
-        WEEKDAYS.forEach(wd => grid.innerHTML += `<div class="weekday">${wd}</div>`);
+function loadMonthData(month) {
+    return JSON.parse(localStorage.getItem(getStorageKey(month)) || '{}');
+}
 
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+function saveMonthData(month, data) {
+    localStorage.setItem(getStorageKey(month), JSON.stringify(data));
+}
 
-        for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="day" style="background:#fafafa"></div>`;
+function initHeaders() {
+    const headers = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+    const container = document.getElementById("dayHeaders");
+    container.innerHTML = "";
+    headers.forEach(d => {
+        const el = document.createElement("div");
+        el.className = "day-name";
+        el.innerText = d;
+        container.appendChild(el);
+    });
+}
 
-        for(let i=1; i<=daysInMonth; i++) {
-            const key = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'day';
-            dayDiv.innerHTML = `<span class="day-num">${i}</span>`;
-            if(services[key]) {
-                const isMine = parseInt(services[key].formalizacao.split('-')[2]) <= CONFIG.cutoff;
-                dayDiv.innerHTML += `<div class="badge ${isMine?'mine':'theirs'}">${isMine?'MEU':'DONO'}</div>`;
-            }
-            dayDiv.onclick = () => openModal(key, i, month);
-            grid.appendChild(dayDiv);
+function renderCalendar() {
+    const cal = document.getElementById("calendar");
+    cal.innerHTML = "";
+
+    document.getElementById("monthTitle").innerText = `${monthNames[currentMonth]} ${year}`;
+
+    const firstDay = new Date(year, currentMonth, 1).getDay();
+    const daysInMonth = new Date(year, currentMonth + 1, 0).getDate();
+    const data = loadMonthData(currentMonth);
+
+    // Células vazias antes do dia 1
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        cal.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const box = document.createElement("div");
+        box.className = "day-card";
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.innerText = day < 10 ? `0${day}` : day;
+
+        // Select
+        const select = document.createElement("select");
+        Object.keys(services).forEach(key => {
+            const opt = document.createElement("option");
+            opt.value = key;
+            opt.innerText = services[key].name;
+            select.appendChild(opt);
+        });
+
+        // Badge Visual
+        const badge = document.createElement("div");
+        badge.className = "service-badge";
+
+        // Set Initial Value
+        if (data[day]) {
+            select.value = data[day];
+            updateBadgeStyle(badge, data[day]);
         }
-        calc(year, month);
+
+        select.onchange = (e) => {
+            const val = e.target.value;
+            data[day] = val;
+            saveMonthData(currentMonth, data);
+            updateBadgeStyle(badge, val);
+            updateTotals();
+        };
+
+        box.appendChild(number);
+        box.appendChild(select);
+        box.appendChild(badge);
+        cal.appendChild(box);
     }
 
-    function calc(y, m) {
-        let wD=0, wN=0, oD=0, oN=0;
-        for(const k in services) {
-            const [sy, sm, sd] = k.split('-').map(Number);
-            if(sy===y && sm===(m+1)) {
-                if(parseInt(services[k].formalizacao.split('-')[2]) <= CONFIG.cutoff) { wD+=CONFIG.day; wN+=CONFIG.night; }
-                else { oD+=CONFIG.day; oN+=CONFIG.night; }
-            }
-        }
-        document.getElementById('wDay').innerText = wD; document.getElementById('wNight').innerText = wN;
-        document.getElementById('oDay').innerText = oD; document.getElementById('oNight').innerText = oN;
+    updateTotals();
+}
+
+function updateBadgeStyle(element, serviceKey) {
+    // Reset classes
+    element.className = "service-badge";
+    
+    if (serviceKey && serviceKey !== "NONE") {
+        const s = services[serviceKey];
+        element.classList.add("visible");
+        element.classList.add(`badge-${serviceKey}`); // ex: badge-CTS
+        element.innerText = s.name;
     }
+}
 
-    function openModal(key, d, m) {
-        selectedDateKey = key;
-        document.getElementById('modalDateDisplay').innerText = `${d} de ${MONTHS[m]}`;
-        document.getElementById('inputFormaliza').value = services[key] ? services[key].formalizacao : '';
-        document.getElementById('modal').classList.add('active');
+function updateTotals() {
+    const data = loadMonthData(currentMonth);
+    let he = 0, vd = 0, vdDay = 0, vdNight = 0;
+
+    Object.values(data).forEach(serviceKey => {
+        const s = services[serviceKey];
+        if (!s) return;
+        he += s.he;
+        vd += s.vd;
+        vdDay += s.vdDay;
+        vdNight += s.vdNight;
+    });
+
+    // Update Text
+    document.getElementById("heTotal").innerText = he;
+    document.getElementById("vdTotal").innerText = vd;
+    document.getElementById("vdDay").innerText = vdDay;
+    document.getElementById("vdNight").innerText = vdNight;
+
+    // Update Progress Bars
+    updateProgressBar("heBar", he, 60);
+    updateProgressBar("vdBar", vd, 60);
+}
+
+function updateProgressBar(elementId, current, max) {
+    const bar = document.getElementById(elementId);
+    const percentage = Math.min((current / max) * 100, 100);
+    
+    bar.style.width = `${percentage}%`;
+    
+    if (current > max) {
+        bar.classList.add("warning");
+    } else {
+        bar.classList.remove("warning");
     }
+}
 
-    function closeModal() { document.getElementById('modal').classList.remove('active'); }
-
-    function saveService() {
-        const val = document.getElementById('inputFormaliza').value;
-        if(!val) return alert("Selecione a data de formalização.");
-        services[selectedDateKey] = { formalizacao: val };
-        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
-        closeModal(); render();
+function prevMonth() {
+    if (currentMonth > 0) {
+        currentMonth--;
+        renderCalendar();
     }
+}
 
-    function deleteService() {
-        delete services[selectedDateKey];
-        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
-        closeModal(); render();
+function nextMonth() {
+    if (currentMonth < 11) {
+        currentMonth++;
+        renderCalendar();
     }
+}
 
-    function changeMonth(dir) { nav += dir; render(); }
-
-    function resetMonth() {
-        if(!confirm("Limpar dados deste mês?")) return;
-        const dt = new Date(); dt.setDate(1); dt.setMonth(new Date().getMonth() + nav);
-        const y = dt.getFullYear(), m = dt.getMonth() + 1;
-        for(const k in services) {
-            const [sy, sm] = k.split('-').map(Number);
-            if(sy===y && sm===m) delete services[k];
-        }
-        localStorage.setItem('mikael_vd_data', JSON.stringify(services));
-        render();
-    }
-
-    window.onload = render;
+// Inicialização
+initHeaders();
+renderCalendar();
 </script>
+
 </body>
 </html>
